@@ -6,10 +6,11 @@
 using namespace std;
 
 void render(void);
-void keyPress(void);
+void keyPress(SDL_Event &event);
 
 //variables
 int x = 0, y = 0;
+bool isRunning;
 
 int main(int argc, char* args[])
 {
@@ -36,7 +37,7 @@ int main(int argc, char* args[])
 	glDisable(GL_DEPTH_TEST);//ker nimamo 3D
 	
 	//variables
-	bool isRunning = true;
+	isRunning = true;
 	SDL_Event event; //event handling event
 	x = 300;
 	y = 200;
@@ -44,16 +45,15 @@ int main(int argc, char* args[])
 	while (isRunning)
 	{
 		//events
-		keyPress();
+		keyPress(event);
 		
 		//logic
 		
-		cout << "test" << endl;
+		
+		
 		//rendering
 		glClear(GL_COLOR_BUFFER_BIT);
-		
 		render();
-		
 		SDL_GL_SwapBuffers();
 	}
 	
@@ -63,7 +63,7 @@ int main(int argc, char* args[])
 	return 0;
 }
 
-void keyPress()
+void keyPress(SDL_Event &event)
 {
 	while (SDL_PollEvent(&event))
 	{
