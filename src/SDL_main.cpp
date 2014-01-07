@@ -5,6 +5,11 @@
 
 using namespace std;
 
+void render(void);
+
+//variables
+int x = 0, y = 0;
+
 int main(int argc, char* args[])
 {
 	SDL_Init(SDL_INIT_EVERYTHING);//Initialize SDL
@@ -31,9 +36,9 @@ int main(int argc, char* args[])
 	
 	//variables
 	bool isRunning = true;
-	int x = 300, y = 200;
 	SDL_Event event; //event handling event
-	
+	x = 300;
+	y = 200;
 	//main loop
 	while (isRunning)
 	{
