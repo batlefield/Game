@@ -6,6 +6,7 @@
 using namespace std;
 
 void render(void);
+void keyPress(void);
 
 //variables
 int x = 0, y = 0;
@@ -43,22 +44,7 @@ int main(int argc, char* args[])
 	while (isRunning)
 	{
 		//events
-		while (SDL_PollEvent(&event))
-		{
-			if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) // X , esc
-				isRunning = false;
-			if (event.type == SDL_KEYUP)
-			{
-				if (event.key.keysym.sym == SDLK_w)
-					y += 32;
-				else if (event.key.keysym.sym == SDLK_s)
-					y -= 32;
-				else if (event.key.keysym.sym == SDLK_d)
-					x += 32;
-				else if (event.key.keysym.sym == SDLK_a)
-					x -= 32;
-			}
-		}
+		keyPress();
 		
 		//logic
 		
@@ -75,6 +61,26 @@ int main(int argc, char* args[])
 	SDL_Quit();
 	
 	return 0;
+}
+
+void keyPress()
+{
+	while (SDL_PollEvent(&event))
+	{
+		if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) // X , esc
+			isRunning = false;
+		if (event.type == SDL_KEYUP)
+		{
+			if (event.key.keysym.sym == SDLK_w)
+				y += 32;
+			else if (event.key.keysym.sym == SDLK_s)
+				y -= 32;
+			else if (event.key.keysym.sym == SDLK_d)
+				x += 32;
+			else if (event.key.keysym.sym == SDLK_a)
+				x -= 32;
+		}
+	}
 }
 
 void render()
