@@ -62,7 +62,7 @@ int main(int argc, char* args[])
 		
 		//logic
 		
-		
+		cout << "test" << endl;
 		//rendering
 		glClear(GL_COLOR_BUFFER_BIT);
 		
