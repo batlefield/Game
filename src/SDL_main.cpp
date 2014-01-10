@@ -2,15 +2,29 @@
 #include "SDL/SDL_opengl.h"
 #include <iostream>
 #include <ctime>
+#include <string>
+#include <sstream>
+#include "Timer.h"
 
 using namespace std;
 
 void render(void);
 void keyPress(SDL_Event &event);
+void calculateFPS(void);
+void capFramerate(void);
 
+//constants
+const int MAX_FPS = 60;
 //variables
 int x = 0, y = 0;
 bool isRunning;
+//FPS
+int frame = 0;
+int fps = 0;
+Timer fpsTimer;
+Timer fpsUpdate;
+Timer capFps;
+
 
 int main(int argc, char* args[])
 {
@@ -41,9 +55,13 @@ int main(int argc, char* args[])
 	SDL_Event event; //event handling event
 	x = 300;
 	y = 200;
+	//Start some timers
+	fpsUpdate.start();
+	fpsTimer.start();
 	//main loop
 	while (isRunning)
 	{
+		capFps.start();
 		//events
 		keyPress(event);
 		
@@ -55,12 +73,35 @@ int main(int argc, char* args[])
 		glClear(GL_COLOR_BUFFER_BIT);
 		render();
 		SDL_GL_SwapBuffers();
+		frame++;
+		capFramerate();
+		calculateFPS();
 	}
 	
 	//SDL Quit
 	SDL_Quit();
 	
 	return 0;
+}
+
+void capFramerate()
+{
+	if(capFps.getTicks() < 1000 / MAX_FPS)
+	{
+		SDL_Delay((1000 / MAX_FPS) - capFps.getTicks());
+	}
+}
+
+void calculateFPS()
+{
+	if(fpsUpdate.getTicks() > 1000)
+	{
+		std::stringstream caption;
+		fps = frame / (fpsTimer.getTicks() / 1000.f);
+		caption << "FPS: " << fps;
+		SDL_WM_SetCaption(caption.str().c_str(), NULL);
+		fpsUpdate.start();	
+	}
 }
 
 void keyPress(SDL_Event &event)
