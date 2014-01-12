@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include "Timer.h"
+#include <math.h>
 
 using namespace std;
 
@@ -12,11 +13,13 @@ void render(void);
 void keyPress(SDL_Event &event);
 void calculateFPS(void);
 void capFramerate(void);
+void func_playerFalling(void);
 
 //constants
 const int MAX_FPS = 60;
 //variables
 int x = 0, y = 0;
+float player_fallTime = 0; //-1=on ground, >0= in air
 bool isRunning;
 //FPS
 int frame = 0;
@@ -66,8 +69,7 @@ int main(int argc, char* args[])
 		keyPress(event);
 		
 		//logic
-		
-		
+		func_playerFalling();
 		
 		//rendering
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -89,6 +91,8 @@ void capFramerate()
 	if(capFps.getTicks() < 1000 / MAX_FPS)
 	{
 		SDL_Delay((1000 / MAX_FPS) - capFps.getTicks());
+		if (player_fallTime != -1)
+			player_fallTime+=0.1;
 	}
 }
 
@@ -131,13 +135,37 @@ void render()
 	glOrtho(0,600,0,400,-1,1); //Set matrix
 		
 	glBegin(GL_TRIANGLES);
-	glColor4f(1,0,0,1);
-	glVertex2f(x-16,y-16);
-	glColor4f(0,1,0,1);
-	glVertex2f(x+16,y-16);
-	glColor4f(0,0,1	,1);
-	glVertex2f(x,y+16);
+		glColor4f(1,0,0,1);
+		glVertex2f(x-16,y-16);
+		glColor4f(0,1,0,1);
+		glVertex2f(x+16,y-16);
+		glColor4f(0,0,1	,1);
+		glVertex2f(x,y+16);
 	glEnd();
+	
+	glLineWidth(1.0);
+	glColor4f(1,1,1,1);
+	glBegin(GL_LINES);
+		glVertex2f(268,100);
+		glVertex2f(332,100);
+	glEnd();	
 		
 	glPopMatrix(); //end
+}
+
+void func_playerFalling()	//Work In Progress
+{
+	//falling
+	if (player_fallTime == -1)
+		return;
+	int fall = ((10*pow((double)player_fallTime,2.0))/2) - ((10*(pow((double)player_fallTime-1,2.0)))/2); //pixels fallen
+	if (x < 252 || x > 348) //if x is away from the border
+		return;
+	if (y-fall+16 > 100 && y-fall-16 > 100) //if above border after falling
+	{
+		y-=fall;
+		player_fallTime == -1;
+		return;
+	}
+	y -= 100 - y+fall;
 }
