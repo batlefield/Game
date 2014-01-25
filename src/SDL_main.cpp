@@ -6,6 +6,7 @@
 #include <sstream>
 #include "Timer.h"
 #include <math.h>
+#include "EntityPlayer.h"
 
 using namespace std;
 
@@ -15,6 +16,8 @@ void calculateFPS(void);
 void capFramerate(void);
 void func_playerFalling(void);
 
+//data containers
+Entity entityList[512];
 //constants
 const int MAX_FPS = 60;
 //variables
@@ -156,9 +159,10 @@ void render()
 void func_playerFalling()	//Work In Progress
 {
 	//falling
-	if (player_fallTime == -1)
+	if (player_fallTime < 0)
 		return;
 	int fall = ((10*pow((double)player_fallTime,2.0))/2) - ((10*(pow((double)player_fallTime-1,2.0)))/2); //pixels fallen
+	cout << fall << endl;
 	if (x < 252 || x > 348) //if x is away from the border
 		return;
 	if (y-fall+16 > 100 && y-fall-16 > 100) //if above border after falling
