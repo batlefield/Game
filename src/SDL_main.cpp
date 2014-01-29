@@ -15,6 +15,7 @@ void keyPress(SDL_Event &event);
 void calculateFPS(void);
 void capFramerate(void);
 void func_playerFalling(void);
+bool func_gravityBorder(void);
 
 //data containers
 Entity entityList[512];
@@ -72,7 +73,8 @@ int main(int argc, char* args[])
 		keyPress(event);
 		
 		//logic
-		func_playerFalling();
+		if ( func_gravityBorder() )
+			func_playerFalling();
 		
 		//rendering
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -159,17 +161,27 @@ void render()
 void func_playerFalling()	//Work In Progress
 {
 	//falling
-	if (player_fallTime < 0)
-		return;
+	//if (player_fallTime == -1)
+	//	return;
 	int fall = ((10*pow((double)player_fallTime,2.0))/2) - ((10*(pow((double)player_fallTime-1,2.0)))/2); //pixels fallen
-	cout << fall << endl;
 	if (x < 252 || x > 348) //if x is away from the border
+	{
+		
 		return;
+	}
 	if (y-fall+16 > 100 && y-fall-16 > 100) //if above border after falling
 	{
 		y-=fall;
-		player_fallTime == -1;
+		//player_fallTime = -1;
 		return;
 	}
-	y -= 100 - y+fall;
+	y = 116;
+	//player_fallTime = -1;
+}
+
+bool func_gravityBorder()
+{
+	if (x >= 252 && x <= 348)
+		return true;
+	return false;
 }
