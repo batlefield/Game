@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include <math.h>
 #include "EntityPlayer.h"
+#include "Level.h"
 
 using namespace std;
 
@@ -57,7 +58,7 @@ int main(int argc, char* args[])
 	glLoadIdentity();//save settings
 	
 	glDisable(GL_DEPTH_TEST);//ker nimamo 3D
-	
+
 	//variables
 	SDL_Event event; //event handling event
 	x = 300;
@@ -93,7 +94,7 @@ int main(int argc, char* args[])
 		
 		while (SDL_PollEvent(&event)) //Buttons pressed
 		{
-			if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE) //X,ESC -> quit
+			if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) //X,ESC -> quit
 				Menu = false;
 		}
 		frame++;
