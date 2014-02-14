@@ -16,6 +16,7 @@ void calculateFPS(void);
 void capFramerate(void);
 void func_playerFalling(void);
 bool func_gravityBorder(void);
+void render_menu(void);
 
 //data containers
 Entity entityList[512];
@@ -67,6 +68,8 @@ int main(int argc, char* args[])
 	//main loop
 	while (Menu)
 	{
+		capFps.start();
+		render_menu();
 		
 		//game loop
 		while (isRunning)
@@ -76,7 +79,6 @@ int main(int argc, char* args[])
 			keyPress(event);
 			
 			//logic
-			Meni();
 			if ( func_gravityBorder() )
 				func_playerFalling();
 			
@@ -89,8 +91,11 @@ int main(int argc, char* args[])
 			calculateFPS();
 		}
 		
-		if (event.type == SDL_QUIT)
+		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
 			Menu = false;
+		frame++;
+		capFramerate();
+		calculateFPS();
 	}
 	
 	//SDL Quit
@@ -192,4 +197,33 @@ bool func_gravityBorder()
 	if (x >= 252 && x <= 348)
 		return true;
 	return false;
+}
+
+void render_menu(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glPushMatrix(); //start
+		
+	glOrtho(0,600,0,400,-1,1); //Set matrix
+	
+	glColor4f(1,0,0,1); //Play button
+	glBegin(GL_QUADS);
+		glVertex2f(472,296);
+		glVertex2f(728,296);
+		glVertex2f(472,232);
+		glVertex2f(728,232);
+	glEnd();
+	
+	glColor4f(0,1,0,1); //Play button green border
+	glBegin(GL_LINE_LOOP);
+		glVertex2f(472,296);
+		glVertex2f(728,296);
+		glVertex2f(472,232);
+		glVertex2f(728,232);
+	glEnd();
+	
+	glPopMatrix(); //stop
+	
+	SDL_GL_SwapBuffers();
 }
