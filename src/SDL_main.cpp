@@ -91,8 +91,11 @@ int main(int argc, char* args[])
 			calculateFPS();
 		}
 		
-		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
-			Menu = false;
+		while (SDL_PollEvent(&event)) //Buttons pressed
+		{
+			if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE) //X,ESC -> quit
+				Menu = false;
+		}
 		frame++;
 		capFramerate();
 		calculateFPS();
@@ -209,18 +212,18 @@ void render_menu(void)
 	
 	glColor4f(1,0,0,1); //Play button
 	glBegin(GL_QUADS);
-		glVertex2f(472,296);
-		glVertex2f(728,296);
-		glVertex2f(472,232);
-		glVertex2f(728,232);
+		glVertex2f(172,296);
+		glVertex2f(428,296);
+		glVertex2f(428,232);
+		glVertex2f(172,232);
 	glEnd();
 	
 	glColor4f(0,1,0,1); //Play button green border
 	glBegin(GL_LINE_LOOP);
-		glVertex2f(472,296);
-		glVertex2f(728,296);
-		glVertex2f(472,232);
-		glVertex2f(728,232);
+		glVertex2f(172,296);
+		glVertex2f(428,296);
+		glVertex2f(428,232);
+		glVertex2f(172,232);
 	glEnd();
 	
 	glPopMatrix(); //stop
