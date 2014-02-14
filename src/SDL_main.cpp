@@ -24,7 +24,7 @@ const int MAX_FPS = 60;
 //variables
 int x = 0, y = 0;
 float player_fallTime = 0; //-1=on ground, >0= in air
-bool isRunning;
+bool isRunning = false, Menu = true;
 //FPS
 int frame = 0;
 int fps = 0;
@@ -58,7 +58,6 @@ int main(int argc, char* args[])
 	glDisable(GL_DEPTH_TEST);//ker nimamo 3D
 	
 	//variables
-	isRunning = true;
 	SDL_Event event; //event handling event
 	x = 300;
 	y = 200;
@@ -66,23 +65,32 @@ int main(int argc, char* args[])
 	fpsUpdate.start();
 	fpsTimer.start();
 	//main loop
-	while (isRunning)
+	while (Menu)
 	{
-		capFps.start();
-		//events
-		keyPress(event);
 		
-		//logic
-		if ( func_gravityBorder() )
-			func_playerFalling();
+		//game loop
+		while (isRunning)
+		{
+			capFps.start();
+			//events
+			keyPress(event);
+			
+			//logic
+			Meni();
+			if ( func_gravityBorder() )
+				func_playerFalling();
+			
+			//rendering
+			glClear(GL_COLOR_BUFFER_BIT);
+			render();
+			SDL_GL_SwapBuffers();
+			frame++;
+			capFramerate();
+			calculateFPS();
+		}
 		
-		//rendering
-		glClear(GL_COLOR_BUFFER_BIT);
-		render();
-		SDL_GL_SwapBuffers();
-		frame++;
-		capFramerate();
-		calculateFPS();
+		if (event.type == SDL_QUIT)
+			Menu = false;
 	}
 	
 	//SDL Quit
@@ -117,7 +125,7 @@ void keyPress(SDL_Event &event)
 {
 	while (SDL_PollEvent(&event))
 	{
-		if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) // X , esc
+		if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE) // X , esc
 			isRunning = false;
 		if (event.type == SDL_KEYUP)
 		{
