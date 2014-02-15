@@ -24,7 +24,8 @@ Entity entityList[512];
 //constants
 const int MAX_FPS = 60;
 //variables
-int x = 0, y = 0;
+int x = 0, y = 0,
+    mouse_x = 0, mouse_y = 0;
 float player_fallTime = 0; //-1=on ground, >0= in air
 bool isRunning = false, Menu = true;
 //FPS
@@ -96,6 +97,17 @@ int main(int argc, char* args[])
 		{
 			if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) //X,ESC -> quit
 				Menu = false;
+			if (event.type == SDL_MOUSEBUTTONUP && 
+			    event.button.button == SDL_BUTTON_LEFT &&
+			    event.button.state == SDL_RELEASED)
+			{
+				mouse_x = event.button.x;
+				mouse_y = 400 - event.button.y;
+				if (mouse_x >= 172 && mouse_x <= 428 &&
+				    mouse_y >= 232 && mouse_y <= 296)
+					isRunning = true;
+				cout << "Play: mx_" << mouse_x << " my_" << mouse_y << endl;
+			}
 		}
 		frame++;
 		capFramerate();
