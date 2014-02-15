@@ -8,6 +8,7 @@
 #include <math.h>
 #include "EntityPlayer.h"
 #include "Level.h"
+#include "Button.h"
 
 using namespace std;
 
@@ -27,7 +28,8 @@ const int MAX_FPS = 60;
 int x = 0, y = 0,
     mouse_x = 0, mouse_y = 0;
 float player_fallTime = 0; //-1=on ground, >0= in air
-bool isRunning = false, Menu = true;
+bool isRunning = false,
+     Menu = true;
 //FPS
 int frame = 0;
 int fps = 0;
@@ -59,10 +61,10 @@ int main(int argc, char* args[])
 	glLoadIdentity();//save settings
 	
 	glDisable(GL_DEPTH_TEST);//ker nimamo 3D
-
+	
 	Level level;
 	level.loadLevel("/home/peter/Game/bin/resources/level1.bmp");
-
+	
 	//variables
 	SDL_Event event; //event handling event
 	x = 300;
@@ -74,7 +76,44 @@ int main(int argc, char* args[])
 	while (Menu)
 	{
 		capFps.start();
-		render_menu();
+		Meni meni;
+		meni.Render();
+		
+		//menu logic
+		while (SDL_PollEvent(&event)) //Buttons pressed
+		{
+			if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) //X,ESC -> quit
+				Menu = false;
+			if (event.type == SDL_MOUSEMOTION) //Pozicija miske
+			{
+				mouse_x = event.motion.x;
+				mouse_y = 400 - event.motion.y;
+				
+				if (mouse_x >= 172 && mouse_x <= 428 &&
+				    mouse_y >= 232 && mouse_y <= 296) //Play button hover
+					PlayButtonGlow = true;
+				else
+					PlayButtonGlow = false;
+					
+				if (mouse_x >= 172 && mouse_x <= 428 &&
+				    mouse_y >= 136 && mouse_y <= 200) //Exit button hover
+					ExitButtonGlow = true;
+				else
+					ExitButtonGlow = false;
+					
+				cout << "mx_" << mouse_x << " my_" << mouse_y << " pbg_" << PlayButtonGlow << " ebg_" << ExitButtonGlow << endl;
+			}
+			if (event.type == SDL_MOUSEBUTTONUP && 
+			    event.button.button == SDL_BUTTON_LEFT &&
+			    event.button.state == SDL_RELEASED) //Button pressed
+			{
+				if (PlayButtonGlow) //Start Game
+					isRunning = true;
+				if (ExitButtonGlow) //Exit
+					Menu = false;
+				cout << "Play: mx_" << mouse_x << " my_" << mouse_y << endl;
+			}
+		}
 		
 		//game loop
 		while (isRunning)
@@ -95,23 +134,8 @@ int main(int argc, char* args[])
 			capFramerate();
 			calculateFPS();
 		}
+		//end game loop
 		
-		while (SDL_PollEvent(&event)) //Buttons pressed
-		{
-			if ((event.type == SDL_QUIT) || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)) //X,ESC -> quit
-				Menu = false;
-			if (event.type == SDL_MOUSEBUTTONUP && 
-			    event.button.button == SDL_BUTTON_LEFT &&
-			    event.button.state == SDL_RELEASED)
-			{
-				mouse_x = event.button.x;
-				mouse_y = 400 - event.button.y;
-				if (mouse_x >= 172 && mouse_x <= 428 &&
-				    mouse_y >= 232 && mouse_y <= 296)
-					isRunning = true;
-				cout << "Play: mx_" << mouse_x << " my_" << mouse_y << endl;
-			}
-		}
 		frame++;
 		capFramerate();
 		calculateFPS();
@@ -216,33 +240,4 @@ bool func_gravityBorder()
 	if (x >= 252 && x <= 348)
 		return true;
 	return false;
-}
-
-void render_menu(void)
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glPushMatrix(); //start
-		
-	glOrtho(0,600,0,400,-1,1); //Set matrix
-	
-	glColor4f(1,0,0,1); //Play button
-	glBegin(GL_QUADS);
-		glVertex2f(172,296);
-		glVertex2f(428,296);
-		glVertex2f(428,232);
-		glVertex2f(172,232);
-	glEnd();
-	
-	glColor4f(0,1,0,1); //Play button green border
-	glBegin(GL_LINE_LOOP);
-		glVertex2f(172,296);
-		glVertex2f(428,296);
-		glVertex2f(428,232);
-		glVertex2f(172,232);
-	glEnd();
-	
-	glPopMatrix(); //stop
-	
-	SDL_GL_SwapBuffers();
 }
