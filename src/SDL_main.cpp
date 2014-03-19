@@ -68,7 +68,7 @@ int main(int argc, char* args[])
 	//variables
 	SDL_Event event; //event handling event
 	x = 300;
-	y = 200;
+	y = 600;
 	//Start some timers
 	fpsUpdate.start();
 	fpsTimer.start();
@@ -219,7 +219,8 @@ void func_playerFalling()	//Work In Progress
 	//falling
 	//if (player_fallTime == -1)
 	//	return;
-	int fall = ((10*pow((double)player_fallTime,2.0))/2) - ((10*(pow((double)player_fallTime-1,2.0)))/2); //pixels fallen
+	int fall = ((5*pow((double)player_fallTime,2.0))/2) - ((5*(pow((double)player_fallTime-1,2.0)))/2); //pixels fallen
+	player_falltime++;
 	if (x < 252 || x > 348) //if x is away from the border
 	{
 		
