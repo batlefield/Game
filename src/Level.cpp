@@ -1,48 +1,77 @@
-#include <fstream>
-#include <iostream>
-#include "SDL/SDL_opengl.h"
 #include "Level.h"
-#include "SDL/SDL.h"//Uint8
+#include <iostream>
+#include <fstream>
+#include <string>
 #include "bmp.h"
+#include <cstdint>
 
 using namespace std;
 
-Level::Level()
-{
+struct LevelData{
+    char* path;
+    int size;
+    int height;
+    int lenght;
+};
 
-	
+int* level;
+struct LevelData data;
+//TODO pixel mapping
+Level::Level(char* path)
+{
+    data.path = path;
+    loadImg();
+}
+struct LevelData getLevelData()
+{
+    return data;
 }
 
-void Level::loadLevel(char* path)
+int* getLevel()
 {
-	int Width = 0;
-	int Height = 0;
-   	int BitCount = 0;
-     
-    	ifstream bmpFile;
-     
-    	BITMAPFILEHEADER bmpFileHead;
-    	BITMAPINFOHEADER bmpInfoHead;
-     
-    	bmpFile.open(path, ios::binary | ios::in);
-     
-	if( !bmpFile.is_open() )
-        	cout << "Error loading image file." << endl;
-    	else
-		cout << "Image file loaded." << endl;
-     
-    	bmpFile.read( (char*)&bmpFileHead.bfType, 14 );
-     
-    	if(bmpFileHead.bfType!=0x4d42) // 0x4d42 is BM
-    		cout << "Wrong file format." << endl;
-     
-    	bmpFile.read( (char*)&bmpInfoHead, sizeof(BITMAPINFOHEADER) );
- 
-    	Width = bmpInfoHead.biWidth;
-    	Height = bmpInfoHead.biHeight;
-    	BitCount = bmpInfoHead.biBitCount;
-     
-    	cout << "Width: " << Width << endl;
-    	cout << "Height: " << Height << endl;
-    	cout << "Bits per pixel: " << BitCount << endl;
+    return level;
+}
+
+int Level::loadImg(){
+    uint8_t* datBuff[2]; // Header buffers
+    uint8_t* pixels = NULL; // Pixels
+    // The file... We open it with it's constructor
+    ifstream file(data.path, ios::binary);
+    if(!file.is_open())
+    {
+        cout << "Failure to open bitmap file." << endl;
+        return 1;
+    }
+    datBuff[0] = new uint8_t[sizeof(BITMAPFILEHEADER)];
+    datBuff[1] = new uint8_t[sizeof(BITMAPINFOHEADER)];
+    file.read((char*)datBuff[0], sizeof(BITMAPFILEHEADER));
+    file.read((char*)datBuff[1], sizeof(BITMAPINFOHEADER));
+    BITMAPFILEHEADER* bmpHeader = (BITMAPFILEHEADER*) datBuff[0];
+    BITMAPINFOHEADER* bmpInfo = (BITMAPINFOHEADER*) datBuff[1];
+    if(bmpHeader->bfType != 0x4D42)
+    {
+        cout << "File \"" << data.path << "\" isn't a bitmap file" << endl;
+        return 2;
+    }
+    pixels = new uint8_t[bmpInfo->biSizeImage];
+    level = new int[bmpInfo->biSizeImage / 3];
+    // Go to where image data starts, then read in image data
+    file.seekg(bmpHeader->bfOffBits);
+    file.read((char*)pixels, bmpInfo->biSizeImage);
+    uint8_t tmpRGB = 0; // Swap buffer
+    int pixel = 0;
+    for (unsigned long i = 0; i < (data.size = bmpInfo->biSizeImage - 3); i += 3)
+    {
+        tmpRGB = pixels[i];
+        pixels[i] = pixels[i + 2];
+        pixels[i + 2] = tmpRGB;
+        pixel = 0;
+        pixel = (pixel | pixels[i]) << 8;
+        pixel = (pixel | pixels[i + 1]) << 8;
+        pixel |= pixels[i + 2];
+        level[i / 3] = pixel;
+    }
+    data.height = bmpInfo->biHeight;
+    data.lenght = bmpInfo->biWidth;
+    return 0;
 }
