@@ -62,9 +62,6 @@ int main(int argc, char* args[])
 	
 	glDisable(GL_DEPTH_TEST);//ker nimamo 3D
 	
-	Level level;
-	level.loadLevel("/home/peter/Game/bin/resources/level1.bmp");
-	
 	//variables
 	SDL_Event event; //event handling event
 	x = 300;
