@@ -1,17 +1,15 @@
-#pragma once
-
+#pragma pack(2)
 typedef int LONG;
 typedef unsigned short int WORD;
 typedef unsigned int DWORD;
-
-typedef struct tagBITMAPFILEHEADER 
+typedef struct tagBITMAPFILEHEADER
 {
-   WORD    bfType;        // must be 'BM' 
+   WORD    bfType;        // must be 'BM'
    DWORD   bfSize;        // size of the whole .bmp file
    WORD    bfReserved1;   // must be 0
    WORD    bfReserved2;   // must be 0
-   DWORD   bfOffBits;     
-} BITMAPFILEHEADER, *PBITMAPFILEHEADER; 
+   DWORD   bfOffBits;
+} BITMAPFILEHEADER, *PBITMAPFILEHEADER;
 
 typedef struct tagBITMAPINFOHEADER
 {
@@ -19,7 +17,7 @@ typedef struct tagBITMAPINFOHEADER
    LONG   biWidth;           // image width
    LONG   biHeight;          // image height
    WORD   biPlanes;          // bitplanes
-   WORD   biBitCount;        // resolution 
+   WORD   biBitCount;        // resolution
    DWORD  biCompression;     // compression
    DWORD  biSizeImage;       // size of the image
    LONG   biXPelsPerMeter;   // pixels per meter X
@@ -27,3 +25,4 @@ typedef struct tagBITMAPINFOHEADER
    DWORD  biClrUsed;         // colors used
    DWORD  biClrImportant;    // important colors
 } BITMAPINFOHEADER, *PBITMAPINFOHEADER;
+#pragma pack()
