@@ -2,9 +2,9 @@
 #define LEVEL_H
 class Level{
 public:
-Level::Level(char* path);
-int Level::loadImg();
-int* Level::getLevel();
+Level(char* path);
+int loadImg();
+int* getLevel();
 
 private:
 

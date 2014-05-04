@@ -217,7 +217,7 @@ void func_playerFalling()	//Work In Progress
 	//if (player_fallTime == -1)
 	//	return;
 	int fall = ((5*pow((double)player_fallTime,2.0))/2) - ((5*(pow((double)player_fallTime-1,2.0)))/2); //pixels fallen
-	player_falltime++;
+	player_fallTime++;
 	if (x < 252 || x > 348) //if x is away from the border
 	{
 		

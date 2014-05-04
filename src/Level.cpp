@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 #include "bmp.h"
-#include <cstdint>
+#include <stdint.h>
 
 using namespace std;
 
