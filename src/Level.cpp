@@ -1,45 +1,71 @@
-#include "Level.h"
-#include <iostream>
 #include <fstream>
-#include <string>
-#include "bmp.h"
+#include <iostream>
+#include "SDL/SDL_opengl.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
 #include <stdint.h>
+#include "Level.h"
+#include <map>
+#include <cstring>
+#include "bmp.h"
 
-using namespace std;
+std::map<int, uint8_t> colorToTileMap;
+std::map<uint8_t, std::string> tileToImageMap;
+std::map<std::string, GLuint> imageToGlIDMap;
+std::map<uint8_t, GLuint> tileToGlIDMap; //mainly helper, could live without it
 
-struct LevelData{
-    char* path;
-    int size;
-    int height;
-    int lenght;
-};
-
-int* level;
-struct LevelData data;
-//TODO pixel mapping
-Level::Level(char* path)
+Level::Level()
 {
-    data.path = path;
-    loadImg();
-}
-struct LevelData getLevelData()
-{
-    return data;
+	//TODO: do something about relative path!
+	addTile(0x00FF00, 0, "resources/basicTile.png");
 }
 
-int* getLevel()
+void Level::addTile(int levelColor, uint8_t tile, std::string path)
 {
-    return level;
+	colorToTileMap[levelColor] = tile;
+	tileToImageMap[tile] = path;
+	imageToGlIDMap[path] = loadImage(path);
+	tileToGlIDMap[tile] = imageToGlIDMap[path];
 }
 
-int Level::loadImg(){
+GLuint Level::loadImage(std::string path)
+{
+	if(imageToGlIDMap.count(path) == 0)
+	{
+		return imageToGlIDMap[path];
+	}
+	GLuint textureID = 0;
+	SDL_Surface* surface = IMG_Load(path.c_str());
+	if(surface == NULL)
+	{
+		std::cout << "Failed to load image " << path << std::endl;
+		std::cout << IMG_GetError() << std::endl;
+		return -1;
+	}
+	
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	int mode = GL_RGB;
+	if(surface->format->BytesPerPixel == 4){
+		mode = GL_RGBA;
+	}
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, mode, surface->w, surface->h, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	std::cout << path << " loaded succesfully!" << std::endl;
+	return textureID;
+}
+
+int Level::loadLevel(std::string path){
     uint8_t* datBuff[2]; // Header buffers
     uint8_t* pixels = NULL; // Pixels
     // The file... We open it with it's constructor
-    ifstream file(data.path, ios::binary);
+    std::ifstream file(path.c_str(), std::ios::binary);
     if(!file.is_open())
     {
-        cout << "Failure to open bitmap file." << endl;
+        std::cout << "Failure to open bitmap file." << std::endl;
         return 1;
     }
     datBuff[0] = new uint8_t[sizeof(BITMAPFILEHEADER)];
@@ -50,28 +76,19 @@ int Level::loadImg(){
     BITMAPINFOHEADER* bmpInfo = (BITMAPINFOHEADER*) datBuff[1];
     if(bmpHeader->bfType != 0x4D42)
     {
-        cout << "File \"" << data.path << "\" isn't a bitmap file" << endl;
+        std::cout << "File \"" << path << "\" isn't a bitmap file" << std::endl;
         return 2;
     }
     pixels = new uint8_t[bmpInfo->biSizeImage];
-    level = new int[bmpInfo->biSizeImage / 3];
     // Go to where image data starts, then read in image data
     file.seekg(bmpHeader->bfOffBits);
     file.read((char*)pixels, bmpInfo->biSizeImage);
     uint8_t tmpRGB = 0; // Swap buffer
-    int pixel = 0;
-    for (unsigned long i = 0; i < (data.size = bmpInfo->biSizeImage - 3); i += 3)
+    for (unsigned long i = 0; i < (bmpInfo->biSizeImage - 3); i += 3)
     {
         tmpRGB = pixels[i];
         pixels[i] = pixels[i + 2];
         pixels[i + 2] = tmpRGB;
-        pixel = 0;
-        pixel = (pixel | pixels[i]) << 8;
-        pixel = (pixel | pixels[i + 1]) << 8;
-        pixel |= pixels[i + 2];
-        level[i / 3] = pixel;
     }
-    data.height = bmpInfo->biHeight;
-    data.lenght = bmpInfo->biWidth;
     return 0;
 }

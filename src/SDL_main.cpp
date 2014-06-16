@@ -69,6 +69,7 @@ int main(int argc, char* args[])
 	//Start some timers
 	fpsUpdate.start();
 	fpsTimer.start();
+	Level level;
 	//main loop
 	while (Menu)
 	{

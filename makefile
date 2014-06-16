@@ -1,5 +1,5 @@
 TARGET = ./bin/Run
-LIBS = -lSDLmain -lSDL -lGL
+LIBS = -lSDLmain -lSDL_image -ljpeg -lpng -ltiff -lwebp -lSDL -lGL 
 CC = g++
 CFLAGS = -g -Wall
 
