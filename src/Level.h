@@ -7,7 +7,8 @@ class Level
 		Level();
 		int loadLevel(std::string path);
 		GLuint loadImage(std::string path);
-		void addTile(int LevelColor, uint8_t tile, std::string path);	
+		void addTile(int LevelColor, uint8_t tile, std::string path);
+		void cleanup();
 
 };
 #endif // LEVEL_H

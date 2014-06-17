@@ -6,18 +6,26 @@
 #include <stdint.h>
 #include "Level.h"
 #include <map>
+#include <list>
 #include <cstring>
 #include "bmp.h"
+#ifdef _WIN32
+	#include <direct.h>
+	#define getcwd _getcwd
+#else
+	#include <unistd.h>
+#endif
 
 std::map<int, uint8_t> colorToTileMap;
 std::map<uint8_t, std::string> tileToImageMap;
 std::map<std::string, GLuint> imageToGlIDMap;
 std::map<uint8_t, GLuint> tileToGlIDMap; //mainly helper, could live without it
+std::list<SDL_Surface*> surfaceList;
 
 Level::Level()
 {
-	//TODO: do something about relative path!
-	addTile(0x00FF00, 0, "resources/basicTile.png");
+	std::string s = getcwd(NULL, 0);
+	addTile(0x00FF00, 0, s + "/resources/basicTile.png");
 }
 
 void Level::addTile(int levelColor, uint8_t tile, std::string path)
@@ -42,6 +50,7 @@ GLuint Level::loadImage(std::string path)
 		std::cout << IMG_GetError() << std::endl;
 		return -1;
 	}
+	surfaceList.insert(surfaceList.begin(), surface);
 	
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -91,4 +100,13 @@ int Level::loadLevel(std::string path){
         pixels[i + 2] = tmpRGB;
     }
     return 0;
+}
+
+void Level::cleanup()
+{
+	std::list<SDL_Surface*>::const_iterator iterator;
+	for(iterator = surfaceList.begin(); iterator != surfaceList.end(); iterator++)
+	{
+		SDL_FreeSurface(*iterator);
+	}
 }

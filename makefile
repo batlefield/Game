@@ -22,5 +22,6 @@ $(TARGET): $(OBJECTS)
 clean:
 	-rm -f ./src/*.o
 	-rm -f $(TARGET)
-run: 
+run:
 	./bin/Run
+	

@@ -140,6 +140,7 @@ int main(int argc, char* args[])
 	}
 	
 	//SDL Quit
+	level.cleanup();
 	SDL_Quit();
 	
 	return 0;
